@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { connect } from "react-redux";
 import styled from "styled-components";
 import PostModal from "./PostModal";
 function Main(props) {
@@ -23,10 +24,15 @@ function Main(props) {
   return (
     <Container>
       <ShareBox>
-        Share
         <div>
-          <img src="/images/user.svg" alt="" />
-          <button onClick={handleClick}>Start a post</button>
+          {props.user && props.user.photoURL ? (
+            <img src={props.user.photoURL} alt="" />
+          ) : (
+            <img src="/images/user.svg" alt="" />
+          )}
+          <button onClick={handleClick} disabled={props.laoding ? true : false}>
+            Start a post
+          </button>
         </div>
         <div>
           <button>
@@ -47,7 +53,9 @@ function Main(props) {
           </button>
         </div>
       </ShareBox>
-      <div>
+      <Content>
+        {props.loading && <img src="./images/loader.gif" alt="" />}
+
         <Article>
           <SharedActor>
             <a>
@@ -102,7 +110,7 @@ function Main(props) {
             </button>
           </SocialActions>
         </Article>
-      </div>
+      </Content>
       <PostModal showModal={showModal} handleClick={handleClick} />
     </Container>
   );
@@ -283,4 +291,19 @@ const SocialActions = styled.div`
     }
   }
 `;
-export default Main;
+const Content = styled.div`
+  text-align: center;
+  & > img {
+    width: 30px;
+  }
+`;
+const mapStateToProps = (state) => {
+  return {
+    user: state.userState.user,
+    loading: state.articleState.loading,
+  };
+};
+const mapDispatchToProps = (dispatch) => {
+  return {};
+};
+export default connect(mapStateToProps, mapDispatchToProps)(Main);
